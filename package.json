@@ -19,9 +19,7 @@
         ],
         "keybindings": [
             {
-                "command": "vs-dify-embed.toggleSidebar",
-                "key": "ctrl+shift+d",
-                "mac": "cmd+shift+d"
+                "command": "vs-dify-embed.toggleSidebar"
             }
         ],
         "viewsContainers": {

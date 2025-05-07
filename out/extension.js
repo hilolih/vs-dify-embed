@@ -29,26 +29,26 @@ const vscode = __importStar(require("vscode"));
  * @param {vscode.ExtensionContext} context
  */
 function activate(context) {
-    // Create output channel for logging
+    // ログ出力用のチャンネルを作成
     const outputChannel = vscode.window.createOutputChannel('VS Dify Embed');
     outputChannel.appendLine('VS Dify Embed extension activated');
-    // Get configuration
+    // 設定を取得
     const config = vscode.workspace.getConfiguration('vs-dify-embed');
     const isEnabled = config.get('enable');
     if (!isEnabled) {
         outputChannel.appendLine('Extension is disabled via configuration');
         return;
     }
-    // Create WebView provider
+    // WebViewプロバイダーを作成
     const provider = new DifyWebViewProvider(context.extensionUri, outputChannel);
-    // Register the WebView provider
+    // WebViewプロバイダーを登録
     context.subscriptions.push(vscode.window.registerWebviewViewProvider('dify-assistant', provider));
-    // Register command to toggle sidebar
+    // サイドバーを切り替えるコマンドを登録
     const toggleCommand = vscode.commands.registerCommand('vs-dify-embed.toggleSidebar', () => {
         vscode.commands.executeCommand('workbench.panel.extension.dify-sidebar.focus');
     });
     context.subscriptions.push(toggleCommand);
-    // Listen for configuration changes
+    // 設定変更を監視
     context.subscriptions.push(vscode.workspace.onDidChangeConfiguration(e => {
         if (e.affectsConfiguration('vs-dify-embed')) {
             provider.updateConfiguration();
@@ -57,7 +57,7 @@ function activate(context) {
 }
 exports.activate = activate;
 /**
- * WebView provider for Dify Assistant
+ * Dify アシスタント用のWebViewプロバイダー
  */
 class DifyWebViewProvider {
     /**
@@ -73,7 +73,7 @@ class DifyWebViewProvider {
         this.updateConfiguration();
     }
     /**
-     * Update configuration from settings
+     * 設定から構成を更新
      */
     updateConfiguration() {
         const config = vscode.workspace.getConfiguration('vs-dify-embed');
@@ -95,14 +95,14 @@ class DifyWebViewProvider {
      */
     resolveWebviewView(webviewView, _context, _token) {
         this.view = webviewView;
-        // Set options for the webview
+        // Webviewのオプションを設定
         webviewView.webview.options = {
             enableScripts: true,
             localResourceRoots: [this.extensionUri]
         };
-        // Set initial HTML content
+        // 初期HTMLコンテンツを設定
         webviewView.webview.html = this.getWebviewContent();
-        // Handle messages from the webview
+        // Webviewからのメッセージを処理
         webviewView.webview.onDidReceiveMessage(message => {
             switch (message.command) {
                 case 'selectAssistant':
@@ -119,7 +119,7 @@ class DifyWebViewProvider {
         });
     }
     /**
-     * Select an assistant by name
+     * 名前でアシスタントを選択
      * @param {string} assistantName
      */
     selectAssistant(assistantName) {
@@ -132,11 +132,11 @@ class DifyWebViewProvider {
         }
     }
     /**
-     * Generate the HTML content for the webview
-     * @returns {string} HTML content
+     * Webview用のHTMLコンテンツを生成
+     * @returns {string} HTMLコンテンツ
      */
     getWebviewContent() {
-        // If no assistants are configured
+        // アシスタントが設定されていない場合
         if (this.assistants.length === 0) {
             return `
                 <!DOCTYPE html>
@@ -168,12 +168,12 @@ class DifyWebViewProvider {
                 </html>
             `;
         }
-        // Generate dropdown options for assistants
+        // アシスタント用のドロップダウンオプションを生成
         const assistantOptions = this.assistants.map(assistant => {
             const selected = this.currentAssistant && assistant.name === this.currentAssistant.name ? 'selected' : '';
             return `<option value="${assistant.name}" ${selected}>${assistant.name}</option>`;
         }).join('');
-        // Current assistant URL
+        // 現在のアシスタントURL
         const currentUrl = this.currentAssistant ? this.currentAssistant.url : '';
         return `
             <!DOCTYPE html>
@@ -273,7 +273,7 @@ class DifyWebViewProvider {
                         const assistantSelector = document.getElementById('assistant-selector');
                         const reloadButton = document.getElementById('reload-button');
 
-                        // Handle assistant selection change
+                        // アシスタント選択の変更を処理
                         assistantSelector.addEventListener('change', (event) => {
                             const assistantName = event.target.value;
                             vscode.postMessage({
@@ -282,10 +282,10 @@ class DifyWebViewProvider {
                             });
                         });
 
-                        // Check if iframe loaded successfully
+                        // iframeが正常に読み込まれたかチェック
                         iframe.addEventListener('load', () => {
-                            // Simply assume the iframe loaded successfully when the load event fires
-                            // We can't access the iframe content due to cross-origin restrictions
+                            // ロードイベントが発生したら、iframeが正常に読み込まれたと仮定
+                            // クロスオリジン制限のため、iframeのコンテンツにアクセスできない
                             errorOverlay.classList.add('hidden');
                             vscode.postMessage({
                                 command: 'log',
@@ -293,7 +293,7 @@ class DifyWebViewProvider {
                             });
                         });
 
-                        // Handle iframe load error
+                        // iframeの読み込みエラーを処理
                         iframe.addEventListener('error', (error) => {
                             errorOverlay.classList.remove('hidden');
                             vscode.postMessage({
@@ -302,14 +302,14 @@ class DifyWebViewProvider {
                             });
                         });
 
-                        // Handle reload button click
+                        // リロードボタンのクリックを処理
                         reloadButton.addEventListener('click', () => {
                             vscode.postMessage({
                                 command: 'log',
                                 message: 'Reloading iframe'
                             });
                             
-                            // Reload the iframe by setting the src attribute again
+                            // srcプロパティを再設定してiframeをリロード
                             const currentSrc = iframe.src;
                             iframe.src = '';
                             setTimeout(() => {
