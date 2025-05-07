@@ -1,0 +1,98 @@
+{
+    "name": "vs-dify-embed",
+    "displayName": "VS Dify Embed",
+    "description": "VS Code extension to embed Dify AI assistants in the secondary sidebar",
+    "version": "0.0.1",
+    "engines": {
+        "vscode": "^1.75.0"
+    },
+    "categories": [
+        "Other"
+    ],
+    "main": "./extension.js",
+    "contributes": {
+        "commands": [
+            {
+                "command": "vs-dify-embed.toggleSidebar",
+                "title": "Toggle Dify Assistant Sidebar"
+            }
+        ],
+        "keybindings": [
+            {
+                "command": "vs-dify-embed.toggleSidebar",
+                "key": "ctrl+shift+d",
+                "mac": "cmd+shift+d"
+            }
+        ],
+        "viewsContainers": {
+            "activitybar": [
+                {
+                    "id": "dify-sidebar",
+                    "title": "Dify Assistant",
+                    "icon": "$(robot)"
+                }
+            ]
+        },
+        "views": {
+            "dify-sidebar": [
+                {
+                    "id": "dify-assistant",
+                    "name": "Dify Assistant",
+                    "type": "webview"
+                }
+            ]
+        },
+        "configuration": {
+            "title": "VS Dify Embed",
+            "properties": {
+                "vs-dify-embed.enable": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Enable or disable the Dify Assistant extension"
+                },
+                "vs-dify-embed.urllist": {
+                    "type": "array",
+                    "default": [
+                        {
+                            "name": "Default Assistant",
+                            "url": "http://ai.hokkaido-np.co.jp/chat/t9BjJCUgTcNwdz4i"
+                        }
+                    ],
+                    "description": "List of Dify assistants with name and URL pairs",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "name": {
+                                "type": "string",
+                                "description": "Name of the assistant"
+                            },
+                            "url": {
+                                "type": "string",
+                                "description": "URL of the assistant"
+                            }
+                        },
+                        "required": [
+                            "name",
+                            "url"
+                        ]
+                    }
+                }
+            }
+        }
+    },
+    "scripts": {
+        "lint": "eslint .",
+        "pretest": "npm run lint",
+        "test": "node ./test/runTest.js",
+        "watch": "tsc -watch -p ./",
+        "package": "vsce package"
+    },
+    "devDependencies": {
+        "@types/vscode": "^1.75.0",
+        "eslint": "^8.0.0",
+        "glob": "^7.2.0",
+        "mocha": "^9.1.3",
+        "typescript": "^4.4.4",
+        "vscode-test": "^1.6.1"
+    }
+}
