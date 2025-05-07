@@ -9,7 +9,7 @@
     "categories": [
         "Other"
     ],
-    "main": "./extension.js",
+    "main": "./out/extension.js",
     "contributes": {
         "commands": [
             {
@@ -84,11 +84,15 @@
         "lint": "eslint .",
         "pretest": "npm run lint",
         "test": "node ./test/runTest.js",
+        "compile": "tsc -p ./",
         "watch": "tsc -watch -p ./",
-        "package": "vsce package"
+        "package": "vsce package",
+        "build": "npm run compile"
     },
     "devDependencies": {
         "@types/vscode": "^1.75.0",
+        "@typescript-eslint/eslint-plugin": "^5.0.0",
+        "@typescript-eslint/parser": "^5.0.0",
         "eslint": "^8.0.0",
         "glob": "^7.2.0",
         "mocha": "^9.1.3",
