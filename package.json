@@ -25,7 +25,7 @@
             }
         ],
         "viewsContainers": {
-            "activitybar": [
+            "panel": [
                 {
                     "id": "dify-sidebar",
                     "title": "Dify Assistant",

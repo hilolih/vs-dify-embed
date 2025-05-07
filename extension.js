@@ -27,7 +27,7 @@ function activate(context) {
 
     // Register command to toggle sidebar
     const toggleCommand = vscode.commands.registerCommand('vs-dify-embed.toggleSidebar', () => {
-        vscode.commands.executeCommand('workbench.view.extension.dify-sidebar');
+        vscode.commands.executeCommand('workbench.panel.extension.dify-sidebar.focus');
     });
 
     context.subscriptions.push(toggleCommand);
