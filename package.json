@@ -15,6 +15,10 @@
             {
                 "command": "vs-dify-embed.toggleSidebar",
                 "title": "Toggle Dify Assistant Sidebar"
+            },
+            {
+                "command": "vs-dify-embed.copy4mailReply",
+                "title": "メール返信用"
             }
         ],
         "keybindings": [
@@ -76,7 +80,23 @@
                     }
                 }
             }
-        }
+        },
+        "menus": {
+            "editor/context": [
+                {
+                    "when": "editorHasSelection",
+                    "command": "vs-dify-embed.copy4mailReply",
+                    "group": "vs-dify-embed"
+                }
+            ]
+        },
+        "terminal/context": [
+            {
+                "command": "vs-dify-embed.copy4mailReply",
+                "when": "terminalHasText",
+                "group": "vs-dify-embed"
+            }
+        ]
     },
     "scripts": {
         "lint": "eslint .",

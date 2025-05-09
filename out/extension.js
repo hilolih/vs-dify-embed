@@ -43,6 +43,32 @@ function activate(context) {
     const provider = new DifyWebViewProvider(context.extensionUri, outputChannel);
     // WebViewプロバイダーを登録
     context.subscriptions.push(vscode.window.registerWebviewViewProvider('dify-assistant', provider));
+    const copy4mailReply = vscode.commands.registerCommand('vs-dify-embed.copy4mailReply', async () => {
+        // アクティブなエディタがあるかチェック
+        const editor = vscode.window.activeTextEditor;
+        let selectedText = '';
+        let promptText = `
+            以下の文章は私あてに届いたメールです。
+            返事を書きたいので3つの選択肢を提示してください
+
+            ## メール内容
+        `.split('\n').map(line => line.trim()).join('\n');
+        if (editor) {
+            // エディタからの選択テキストを取得
+            selectedText = editor.document.getText(editor.selection);
+        }
+        if (!selectedText) {
+            vscode.window.showInformationMessage('テキストが選択されていません');
+            return;
+        }
+        // テキストをクリップボードにコピー
+        await vscode.env.clipboard.writeText(promptText + "\n" + selectedText);
+        // Difyサイドバーを表示（存在しなければ）
+        await vscode.commands.executeCommand('workbench.view.extension.dify-sidebar');
+        // ユーザーにペーストを促すメッセージを表示
+        vscode.window.showInformationMessage('クリップボードにコピーされました。Difyに貼り付けてください');
+    });
+    context.subscriptions.push(copy4mailReply);
     // サイドバーを切り替えるコマンドを登録
     const toggleCommand = vscode.commands.registerCommand('vs-dify-embed.toggleSidebar', () => {
         vscode.commands.executeCommand('workbench.panel.extension.dify-sidebar.focus');
