@@ -1,72 +1,72 @@
 # VS Dify Embed
 
-A Visual Studio Code extension that embeds Dify AI assistants in the VS Code sidebar.
+VS Code サイドバーに Dify AI アシスタントを埋め込む Visual Studio Code 拡張機能です。
 
-## Features
+## 機能
 
-- Display Dify AI assistants directly within VS Code
-- Manage multiple assistants with easy switching via dropdown menu
-- Toggle sidebar visibility with command and keyboard shortcut
-- Network connectivity detection with error handling
+- Dify AI アシスタントを VS Code 内に直接表示
+- ドロップダウンメニューで複数のアシスタントを簡単に切り替え
+- コマンドとキーボードショートカットでサイドバーの表示/非表示を切り替え
+- ネットワーク接続状態の検出とエラー処理
 
-## Requirements
+## 要件
 
-- Visual Studio Code version 1.60.0 or higher
-- Access to the System Department LAN for connecting to Dify assistants
+- Visual Studio Code バージョン 1.60.0 以上
+- Dify アシスタントに接続するためのシステム部門 LAN へのアクセス
 
-## Installation
+## インストール
 
-1. Download the extension package (.vsix file)
-2. Open VS Code
-3. Go to Extensions view (Ctrl+Shift+X)
-4. Click on the "..." menu in the top-right of the Extensions view
-5. Select "Install from VSIX..." and choose the downloaded file
+1. 拡張機能パッケージ（.vsix ファイル）をダウンロード
+2. VS Code を開く
+3. 拡張機能ビュー（Ctrl+Shift+X）に移動
+4. 拡張機能ビューの右上にある「...」メニューをクリック
+5. 「VSIX からインストール...」を選択し、ダウンロードしたファイルを選択
 
-## Usage
+## 使い方
 
-1. Click on the Dify Assistant icon in the Activity Bar (sidebar)
-2. Select an assistant from the dropdown menu
-3. Interact with the assistant directly within VS Code
+1. アクティビティバー（サイドバー）の Dify アシスタントアイコンをクリック
+2. ドロップダウンメニューからアシスタントを選択
+3. VS Code 内でアシスタントと直接対話
 
-### Keyboard Shortcuts
+### キーボードショートカット
 
-- Toggle Dify Assistant sidebar: `Ctrl+Shift+D` (Windows/Linux) or `Cmd+Shift+D` (Mac)
+- Dify アシスタントサイドバーの表示/非表示: `Ctrl+Shift+D`（Windows/Linux）または `Cmd+Shift+D`（Mac）
 
-## Extension Settings
+## 拡張機能の設定
 
-This extension contributes the following settings:
+この拡張機能は以下の設定を提供します：
 
-* `vs-dify-embed.enable`: Enable/disable the extension
-* `vs-dify-embed.urllist`: List of assistants with name and URL pairs
+* `vs-dify-embed.enable`: 拡張機能の有効/無効
+* `vs-dify-embed.urllist`: 名前と URL のペアを持つアシスタントのリスト
 
-### Managing Assistants
+### アシスタントの管理
 
-To add or modify assistants:
+アシスタントを追加または変更するには：
 
-1. Open VS Code Settings (File > Preferences > Settings)
-2. Search for "VS Dify Embed"
-3. Edit the `vs-dify-embed.urllist` setting to add, remove, or modify assistants
+1. VS Code の設定を開く（ファイル > 基本設定 > 設定）
+2. 「VS Dify Embed」を検索
+3. `vs-dify-embed.urllist` 設定を編集してアシスタントを追加、削除、または変更
 
-Example configuration:
+設定例：
 
 ```json
 "vs-dify-embed.urllist": [
   {
-    "name": "General Assistant",
+    "name": "一般アシスタント",
     "url": "http://ai.hokkaido-np.co.jp/chatbot/ghyJ5maWmgRrXo7G"
   },
   {
-    "name": "Code Assistant",
+    "name": "コードアシスタント",
     "url": "http://ai.hokkaido-np.co.jp/chatbot/another-id"
   }
 ]
 ```
 
-## Troubleshooting
+## トラブルシューティング
 
-- **Connection Error**: If you see a connection error, ensure you are connected to the System Department LAN. You can click the "リロード" (Reload) button to retry the connection.
-- **No Assistants Available**: Add assistants in the extension settings as described above.
+- **接続エラー**: 接続エラーが表示された場合、システム部門LANに接続されていることを確認してください。「リロード」ボタンをクリックして接続を再試行できます。
+- **アシスタントが利用できない**: 上記の説明に従って、拡張機能の設定でアシスタントを追加してください。
 
-## License
+## ライセンス
 
-This extension is licensed under the MIT License.
+この拡張機能は MIT ライセンスの下で提供されています。
