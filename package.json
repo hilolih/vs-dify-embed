@@ -17,17 +17,8 @@
                 "title": "Toggle Dify Assistant Sidebar"
             },
             {
-                "command": "vs-dify-embed.copy4mailReply",
-                "title": "メール返信用"
-            },
-            {
-                "command": "vs-dify-embed.translate",
-                "title": "翻訳"
-            }
-        ],
-        "keybindings": [
-            {
-                "command": "vs-dify-embed.toggleSidebar"
+                "command": "vs-dify-embed.selectPrompt",
+                "title": "Difyプロンプト"
             }
         ],
         "viewsContainers": {
@@ -82,41 +73,56 @@
                             "url"
                         ]
                     }
+                },
+                "vs-dify-embed.prompts": {
+                    "type": "array",
+                    "default": [
+                        {
+                            "label": "メール返信用",
+                            "prompt": "以下の文章は問い合わせに返信するメールです。\n返信を作成したいので3つの選択肢を提示してください\n\n## メール内容"
+                        },
+                        {
+                            "label": "翻訳",
+                            "prompt": "以下の文章を日本語で理解したいです。\n段落ごとに、原文、日本語訳を並べてください。\nわかりやすく段落ごとに罫線を入れてください\n\n## 文章"
+                        }
+                    ],
+                    "description": "Difyに送信するためのプロンプトのリスト",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "label": {
+                                "type": "string",
+                                "description": "プロンプトの表示名"
+                            },
+                            "prompt": {
+                                "type": "string",
+                                "description": "Difyに送信するプロンプトテキスト"
+                            }
+                        },
+                        "required": [
+                            "label",
+                            "prompt"
+                        ]
+                    }
                 }
             }
         },
         "menus": {
             "editor/context": [
                 {
-                    "submenu": "vs-dify-embed.submenu",
+                    "command": "vs-dify-embed.selectPrompt",
                     "when": "editorHasSelection",
                     "group": "vs-dify-embed"
                 }
             ],
             "terminal/context": [
                 {
-                    "submenu": "vs-dify-embed.submenu",
+                    "command": "vs-dify-embed.selectPrompt",
                     "when": "terminalHasText",
                     "group": "navigation"
                 }
-            ],
-            "vs-dify-embed.submenu": [
-                {
-                    "command": "vs-dify-embed.copy4mailReply",
-                    "group": "vs-dify-embed@1"
-                },
-                {
-                    "command": "vs-dify-embed.translate",
-                    "group": "vs-dify-embed@2"
-                }
             ]
-        },
-        "submenus": [
-            {
-                "id": "vs-dify-embed.submenu",
-                "label": "Dify"
-            }
-        ]
+        }
     },
     "scripts": {
         "lint": "eslint .",

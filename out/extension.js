@@ -55,8 +55,12 @@ function activate(context) {
             // エディタからの選択テキストを取得
             selectedText = editor.document.getText(editor.selection);
         }
+        // debug
+        const previewText = selectedText.length > 20 ? selectedText.substring(0, 20) : selectedText;
+        outputChannel.appendLine(`selected Text: ${previewText}...`);
         if (!selectedText) {
             vscode.window.showInformationMessage('テキストが選択されていません');
+            outputChannel.appendLine('No text selected');
             return;
         }
         // テキストをクリップボードにコピー
@@ -66,26 +70,26 @@ function activate(context) {
         // ユーザーにペーストを促すメッセージを表示
         vscode.window.showInformationMessage('クリップボードにコピーされました。Difyに貼り付けてください');
     }
-    const translateCommand = vscode.commands.registerCommand('vs-dify-embed.translate', async () => {
-        const promptText = `
-            以下の文章を日本語に翻訳してください。
-            段落ごとにはじめに英語の文章を記載し、次に日本語の翻訳を記載してください。
-
-            ## 文章
-        `.split('\n').map(line => line.trim()).join('\n');
-        await copyTextToDify(promptText);
+    // プロンプト選択コマンドを登録
+    const selectPromptCommand = vscode.commands.registerCommand('vs-dify-embed.selectPrompt', async () => {
+        // 設定からプロンプトを取得
+        const config = vscode.workspace.getConfiguration('vs-dify-embed');
+        const prompts = config.get('prompts') || [];
+        if (prompts.length === 0) {
+            vscode.window.showInformationMessage('プロンプトが設定されていません。設定から追加してください。');
+            return;
+        }
+        // プロンプト選択用のクイックピックを表示
+        const selectedItem = await vscode.window.showQuickPick(prompts.map(p => ({ label: p.label, description: p.prompt.split('\n')[0], prompt: p.prompt })), {
+            placeHolder: 'プロンプトを選択してください',
+            matchOnDescription: true,
+            matchOnDetail: true
+        });
+        if (selectedItem) {
+            await copyTextToDify(selectedItem.prompt);
+        }
     });
-    context.subscriptions.push(translateCommand);
-    const copy4mailReply = vscode.commands.registerCommand('vs-dify-embed.copy4mailReply', async () => {
-        const promptText = `
-            以下の文章は私あてに届いたメールです。
-            返事を書きたいので3つの選択肢を提示してください
-
-            ## メール内容
-        `.split('\n').map(line => line.trim()).join('\n');
-        await copyTextToDify(promptText);
-    });
-    context.subscriptions.push(copy4mailReply);
+    context.subscriptions.push(selectPromptCommand);
     // サイドバーを切り替えるコマンドを登録
     const toggleCommand = vscode.commands.registerCommand('vs-dify-embed.toggleSidebar', () => {
         vscode.commands.executeCommand('workbench.panel.extension.dify-sidebar.focus');
@@ -121,6 +125,7 @@ class DifyWebViewProvider {
     updateConfiguration() {
         const config = vscode.workspace.getConfiguration('vs-dify-embed');
         this.assistants = config.get('urllist') || [];
+        this.outputChannel.appendLine(`設定が更新されました`);
         if (this.assistants.length > 0) {
             this.currentAssistant = this.currentAssistant || this.assistants[0];
         }
