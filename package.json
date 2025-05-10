@@ -2,7 +2,7 @@
     "name": "vs-dify-embed",
     "displayName": "VS Dify Embed",
     "description": "VS Code extension to embed Dify AI assistants in the secondary sidebar",
-    "version": "0.0.2",
+    "version": "0.0.3",
     "engines": {
         "vscode": "^1.75.0"
     },
