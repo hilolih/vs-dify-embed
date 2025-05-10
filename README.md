@@ -36,8 +36,8 @@ VS Code サイドバーに Dify AI アシスタントを埋め込む Visual Stud
 
 この拡張機能は以下の設定を提供します：
 
-* `vs-dify-embed.enable`: 拡張機能の有効/無効
-* `vs-dify-embed.urllist`: 名前と URL のペアを持つアシスタントのリスト
+* `dify-embed.enable`: 拡張機能の有効/無効
+* `dify-embed.urllist`: 名前と URL のペアを持つアシスタントのリスト
 
 ### アシスタントの管理
 
@@ -45,12 +45,12 @@ VS Code サイドバーに Dify AI アシスタントを埋め込む Visual Stud
 
 1. VS Code の設定を開く（ファイル > 基本設定 > 設定）
 2. 「VS Dify Embed」を検索
-3. `vs-dify-embed.urllist` 設定を編集してアシスタントを追加、削除、または変更
+3. `dify-embed.urllist` 設定を編集してアシスタントを追加、削除、または変更
 
 設定例：
 
 ```json
-"vs-dify-embed.urllist": [
+"dify-embed.urllist": [
   {
     "name": "一般アシスタント",
     "url": "http://ai.hokkaido-np.co.jp/chatbot/ghyJ5maWmgRrXo7G"

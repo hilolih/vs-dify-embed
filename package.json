@@ -1,6 +1,6 @@
 {
-    "name": "vs-dify-embed",
-    "displayName": "VS Dify Embed",
+    "name": "dify-embed",
+    "displayName": "Dify Embed",
     "description": "VS Code extension to embed Dify AI assistants in the secondary sidebar",
     "version": "0.0.3",
     "publisher": "hilolih",
@@ -15,11 +15,11 @@
     "contributes": {
         "commands": [
             {
-                "command": "vs-dify-embed.toggleSidebar",
+                "command": "dify-embed.toggleSidebar",
                 "title": "Toggle Dify Assistant Sidebar"
             },
             {
-                "command": "vs-dify-embed.selectPrompt",
+                "command": "dify-embed.selectPrompt",
                 "title": "Difyプロンプト"
             }
         ],
@@ -44,12 +44,12 @@
         "configuration": {
             "title": "VS Dify Embed",
             "properties": {
-                "vs-dify-embed.enable": {
+                "dify-embed.enable": {
                     "type": "boolean",
                     "default": true,
                     "description": "Enable or disable the Dify Assistant extension"
                 },
-                "vs-dify-embed.urllist": {
+                "dify-embed.urllist": {
                     "type": "array",
                     "default": [
                         {
@@ -76,7 +76,7 @@
                         ]
                     }
                 },
-                "vs-dify-embed.prompts": {
+                "dify-embed.prompts": {
                     "type": "array",
                     "default": [
                         {
@@ -112,14 +112,14 @@
         "menus": {
             "editor/context": [
                 {
-                    "command": "vs-dify-embed.selectPrompt",
+                    "command": "dify-embed.selectPrompt",
                     "when": "editorHasSelection",
-                    "group": "vs-dify-embed"
+                    "group": "dify-embed"
                 }
             ],
             "terminal/context": [
                 {
-                    "command": "vs-dify-embed.selectPrompt",
+                    "command": "dify-embed.selectPrompt",
                     "when": "terminalHasText",
                     "group": "navigation"
                 }
