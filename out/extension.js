@@ -33,7 +33,7 @@ function activate(context) {
     const outputChannel = vscode.window.createOutputChannel('VS Dify Embed');
     outputChannel.appendLine('VS Dify Embed extension activated');
     // 設定を取得
-    const config = vscode.workspace.getConfiguration('vs-dify-embed');
+    const config = vscode.workspace.getConfiguration('dify-embed');
     const isEnabled = config.get('enable');
     if (!isEnabled) {
         outputChannel.appendLine('Extension is disabled via configuration');
@@ -71,9 +71,9 @@ function activate(context) {
         vscode.window.showInformationMessage('クリップボードにコピーされました。Difyに貼り付けてください');
     }
     // プロンプト選択コマンドを登録
-    const selectPromptCommand = vscode.commands.registerCommand('vs-dify-embed.selectPrompt', async () => {
+    const selectPromptCommand = vscode.commands.registerCommand('dify-embed.selectPrompt', async () => {
         // 設定からプロンプトを取得
-        const config = vscode.workspace.getConfiguration('vs-dify-embed');
+        const config = vscode.workspace.getConfiguration('dify-embed');
         const prompts = config.get('prompts') || [];
         if (prompts.length === 0) {
             vscode.window.showInformationMessage('プロンプトが設定されていません。設定から追加してください。');
@@ -91,13 +91,13 @@ function activate(context) {
     });
     context.subscriptions.push(selectPromptCommand);
     // サイドバーを切り替えるコマンドを登録
-    const toggleCommand = vscode.commands.registerCommand('vs-dify-embed.toggleSidebar', () => {
+    const toggleCommand = vscode.commands.registerCommand('dify-embed.toggleSidebar', () => {
         vscode.commands.executeCommand('workbench.panel.extension.dify-sidebar.focus');
     });
     context.subscriptions.push(toggleCommand);
     // 設定変更を監視
     context.subscriptions.push(vscode.workspace.onDidChangeConfiguration(e => {
-        if (e.affectsConfiguration('vs-dify-embed')) {
+        if (e.affectsConfiguration('dify-embed')) {
             provider.updateConfiguration();
         }
     }));
@@ -123,7 +123,7 @@ class DifyWebViewProvider {
      * 設定から構成を更新
      */
     updateConfiguration() {
-        const config = vscode.workspace.getConfiguration('vs-dify-embed');
+        const config = vscode.workspace.getConfiguration('dify-embed');
         this.assistants = config.get('urllist') || [];
         this.outputChannel.appendLine(`設定が更新されました`);
         if (this.assistants.length > 0) {

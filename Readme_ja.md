@@ -1,4 +1,4 @@
-# vs-dify-embed README
+# dify-embed README
 
 ## 要件
 
@@ -28,8 +28,8 @@
 
 ### 設定項目
 
-- `vs-dify-embed.enable`: 拡張機能の有効/無効切り替え
-- `vs-dify-embed.urllist`: (アシスタント名,URL)の要素を持つ配列。設定画面で追加、削除が可能なこと。プルダウンにはこの変数で管理するアシスタント名を表示。
+- `dify-embed.enable`: 拡張機能の有効/無効切り替え
+- `dify-embed.urllist`: (アシスタント名,URL)の要素を持つ配列。設定画面で追加、削除が可能なこと。プルダウンにはこの変数で管理するアシスタント名を表示。
 
 ## 実装計画
 

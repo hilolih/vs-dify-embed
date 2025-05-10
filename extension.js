@@ -9,7 +9,7 @@ function activate(context) {
     outputChannel.appendLine('VS Dify Embed extension activated');
 
     // Get configuration
-    const config = vscode.workspace.getConfiguration('vs-dify-embed');
+    const config = vscode.workspace.getConfiguration('dify-embed');
     const isEnabled = config.get('enable');
 
     if (!isEnabled) {
@@ -26,7 +26,7 @@ function activate(context) {
     );
 
     // Register command to toggle sidebar
-    const toggleCommand = vscode.commands.registerCommand('vs-dify-embed.toggleSidebar', () => {
+    const toggleCommand = vscode.commands.registerCommand('dify-embed.toggleSidebar', () => {
         vscode.commands.executeCommand('workbench.panel.extension.dify-sidebar.focus');
     });
 
@@ -35,7 +35,7 @@ function activate(context) {
     // Listen for configuration changes
     context.subscriptions.push(
         vscode.workspace.onDidChangeConfiguration(e => {
-            if (e.affectsConfiguration('vs-dify-embed')) {
+            if (e.affectsConfiguration('dify-embed')) {
                 provider.updateConfiguration();
             }
         })
@@ -63,7 +63,7 @@ class DifyWebViewProvider {
      * Update configuration from settings
      */
     updateConfiguration() {
-        const config = vscode.workspace.getConfiguration('vs-dify-embed');
+        const config = vscode.workspace.getConfiguration('dify-embed');
         this.assistants = config.get('urllist') || [];
 
         if (this.assistants.length > 0) {
