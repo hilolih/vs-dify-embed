@@ -25,16 +25,14 @@ export function activate(context: vscode.ExtensionContext): void {
         vscode.window.registerWebviewViewProvider('dify-assistant', provider)
     );
 
-    const copy4mailReply = vscode.commands.registerCommand('vs-dify-embed.copy4mailReply', async () => {
+    /**
+     * 選択テキストをDifyに送るための共通処理
+     * @param {string} promptText - Difyに送るプロンプトテキスト
+     */
+    async function copyTextToDify(promptText: string): Promise<void> {
         // アクティブなエディタがあるかチェック
         const editor = vscode.window.activeTextEditor;
         let selectedText = '';
-        let promptText = `
-            以下の文章は私あてに届いたメールです。
-            返事を書きたいので3つの選択肢を提示してください
-
-            ## メール内容
-        `.split('\n').map(line => line.trim()).join('\n')
 
         if (editor) {
             // エディタからの選択テキストを取得
@@ -52,9 +50,30 @@ export function activate(context: vscode.ExtensionContext): void {
 
         // ユーザーにペーストを促すメッセージを表示
         vscode.window.showInformationMessage('クリップボードにコピーされました。Difyに貼り付けてください');
+    }
 
+    const translateCommand = vscode.commands.registerCommand('vs-dify-embed.translate', async () => {
+        const promptText = `
+            以下の文章を日本語に翻訳してください。
+            段落ごとにはじめに英語の文章を記載し、次に日本語の翻訳を記載してください。
+
+            ## 文章
+        `.split('\n').map(line => line.trim()).join('\n');
+        
+        await copyTextToDify(promptText);
     });
+    context.subscriptions.push(translateCommand);
 
+    const copy4mailReply = vscode.commands.registerCommand('vs-dify-embed.copy4mailReply', async () => {
+        const promptText = `
+            以下の文章は私あてに届いたメールです。
+            返事を書きたいので3つの選択肢を提示してください
+
+            ## メール内容
+        `.split('\n').map(line => line.trim()).join('\n');
+        
+        await copyTextToDify(promptText);
+    });
     context.subscriptions.push(copy4mailReply);
 
     // サイドバーを切り替えるコマンドを登録

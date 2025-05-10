@@ -19,6 +19,10 @@
             {
                 "command": "vs-dify-embed.copy4mailReply",
                 "title": "メール返信用"
+            },
+            {
+                "command": "vs-dify-embed.translate",
+                "title": "翻訳"
             }
         ],
         "keybindings": [
@@ -84,17 +88,33 @@
         "menus": {
             "editor/context": [
                 {
+                    "submenu": "vs-dify-embed.submenu",
                     "when": "editorHasSelection",
-                    "command": "vs-dify-embed.copy4mailReply",
                     "group": "vs-dify-embed"
+                }
+            ],
+            "terminal/context": [
+                {
+                    "submenu": "vs-dify-embed.submenu",
+                    "when": "terminalHasText",
+                    "group": "navigation"
+                }
+            ],
+            "vs-dify-embed.submenu": [
+                {
+                    "command": "vs-dify-embed.copy4mailReply",
+                    "group": "vs-dify-embed@1"
+                },
+                {
+                    "command": "vs-dify-embed.translate",
+                    "group": "vs-dify-embed@2"
                 }
             ]
         },
-        "terminal/context": [
+        "submenus": [
             {
-                "command": "vs-dify-embed.copy4mailReply",
-                "when": "terminalHasText",
-                "group": "vs-dify-embed"
+                "id": "vs-dify-embed.submenu",
+                "label": "Dify"
             }
         ]
     },
