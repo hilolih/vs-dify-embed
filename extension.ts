@@ -1,4 +1,6 @@
 import * as vscode from 'vscode';
+import * as http from 'http';
+import * as https from 'https';
 
 /**
  * @param {vscode.ExtensionContext} context
@@ -128,7 +130,7 @@ class DifyWebViewProvider implements vscode.WebviewViewProvider {
     /**
      * 設定から構成を更新
      */
-    public updateConfiguration(): void {
+    public async updateConfiguration(): Promise<void> {
         const config = vscode.workspace.getConfiguration('dify-embed');
         this.assistants = config.get<Array<{ name: string, url: string }>>('urllist') || [];
         this.outputChannel.appendLine(`設定が更新されました`);
@@ -140,7 +142,7 @@ class DifyWebViewProvider implements vscode.WebviewViewProvider {
         }
 
         if (this.view) {
-            this.view.webview.html = this.getWebviewContent();
+            this.view.webview.html = await this.getWebviewContent();
         }
     }
 
@@ -149,11 +151,11 @@ class DifyWebViewProvider implements vscode.WebviewViewProvider {
      * @param {vscode.WebviewViewResolveContext} context
      * @param {vscode.CancellationToken} _token
      */
-    resolveWebviewView(
+    async resolveWebviewView(
         webviewView: vscode.WebviewView,
         _context: vscode.WebviewViewResolveContext,
         _token: vscode.CancellationToken
-    ): void {
+    ): Promise<void> {
         this.view = webviewView;
 
         // Webviewのオプションを設定
@@ -163,10 +165,10 @@ class DifyWebViewProvider implements vscode.WebviewViewProvider {
         };
 
         // 初期HTMLコンテンツを設定
-        webviewView.webview.html = this.getWebviewContent();
+        webviewView.webview.html = await this.getWebviewContent();
 
         // Webviewからのメッセージを処理
-        webviewView.webview.onDidReceiveMessage(message => {
+        webviewView.webview.onDidReceiveMessage(async message => {
             switch (message.command) {
                 case 'selectAssistant':
                     this.selectAssistant(message.assistantName);
@@ -186,21 +188,26 @@ class DifyWebViewProvider implements vscode.WebviewViewProvider {
      * 名前でアシスタントを選択
      * @param {string} assistantName 
      */
-    private selectAssistant(assistantName: string): void {
+    private async selectAssistant(assistantName: string): Promise<void> {
         const assistant = this.assistants.find(a => a.name === assistantName);
         if (assistant) {
             this.currentAssistant = assistant;
             if (this.view) {
-                this.view.webview.html = this.getWebviewContent();
+                this.view.webview.html = await this.getWebviewContent();
             }
         }
     }
 
     /**
      * Webview用のHTMLコンテンツを生成
-     * @returns {string} HTMLコンテンツ
+     * @returns {Promise<string>} HTMLコンテンツ
      */
-    private getWebviewContent(): string {
+    private async getWebviewContent(): Promise<string> {
+        let isUrlAccessible = false;
+        if (this.currentAssistant && this.currentAssistant.url) {
+            isUrlAccessible = await this.checkUrlAccessibility(this.currentAssistant.url);
+        }
+
         // アシスタントが設定されていない場合
         if (this.assistants.length === 0) {
             return `
@@ -242,6 +249,7 @@ class DifyWebViewProvider implements vscode.WebviewViewProvider {
 
         // 現在のアシスタントURL
         const currentUrl = this.currentAssistant ? this.currentAssistant.url : '';
+        const errorOverlayClass = isUrlAccessible ? "error-overlay hidden" : "error-overlay";
 
         return `
             <!DOCTYPE html>
@@ -326,7 +334,7 @@ class DifyWebViewProvider implements vscode.WebviewViewProvider {
                 </div>
                 <div class="iframe-container">
                     <iframe id="dify-iframe" src="${currentUrl}" sandbox="allow-scripts allow-forms allow-popups allow-modals allow-downloads allow-top-navigation allow-same-origin"></iframe>
-                    <div id="error-overlay" class="error-overlay hidden">
+                    <div id="error-overlay" class="${errorOverlayClass}">
                         <h3>Connection Error</h3>
                         <p>Unable to connect to the Dify assistant. Please check your network connection and ensure you are on the System Department LAN.</p>
                         <button id="reload-button" class="reload-button">リロード</button>
@@ -353,7 +361,8 @@ class DifyWebViewProvider implements vscode.WebviewViewProvider {
                         // iframeが正常に読み込まれたかチェック
                         iframe.addEventListener('load', () => {
                             // ロードイベントが発生したら、iframeが正常に読み込まれたと仮定
-                            // クロスオリジン制限のため、iframeのコンテンツにアクセスできない
+                            // クロスオリジン制限のため、iframeのコンテンツにアクセスできない場合があるが、
+                            // 'load'イベント自体はiframeのドキュメントがロード完了したことを示す
                             errorOverlay.classList.add('hidden');
                             vscode.postMessage({
                                 command: 'log',
@@ -366,29 +375,61 @@ class DifyWebViewProvider implements vscode.WebviewViewProvider {
                             errorOverlay.classList.remove('hidden');
                             vscode.postMessage({
                                 command: 'error',
-                                message: 'Failed to load Dify assistant: ' + error.message
+                                message: 'Failed to load Dify assistant: ' + (error ? error.message : 'Unknown iframe error')
                             });
                         });
+                        // Note: The iframe load and error events are secondary checks.
+                        // The primary check is now done via checkUrlAccessibility before rendering.
+                        // The error-overlay visibility is initially set based on that check.
 
                         // リロードボタンのクリックを処理
                         reloadButton.addEventListener('click', () => {
                             vscode.postMessage({
                                 command: 'log',
-                                message: 'Reloading iframe'
+                                message: 'Reloading iframe by user'
                             });
-                            
-                            // srcプロパティを再設定してiframeをリロード
-                            const currentSrc = iframe.src;
-                            iframe.src = '';
-                            setTimeout(() => {
-                                iframe.src = currentSrc;
-                            }, 100);
+                            // Request a full webview refresh to re-check accessibility
+                             vscode.postMessage({ command: 'selectAssistant', assistantName: assistantSelector.value });
                         });
                     })();
                 </script>
             </body>
             </html>
         `;
+    }
+
+    /**
+     * Checks if a URL is accessible.
+     * @param {string} url The URL to check.
+     * @returns {Promise<boolean>} True if the URL is accessible, false otherwise.
+     */
+    public async checkUrlAccessibility(url: string): Promise<boolean> {
+        return new Promise<boolean>((resolve) => {
+            const protocol = url.startsWith('https') ? https : http;
+            const request = protocol.get(url, { timeout: 5000 }, (response) => {
+                const statusCode = response.statusCode || 0;
+                if (statusCode >= 200 && statusCode < 300) {
+                    this.outputChannel.appendLine(`URL ${url} is accessible with status code ${statusCode}`);
+                    resolve(true);
+                } else {
+                    this.outputChannel.appendLine(`URL ${url} returned status code ${statusCode}`);
+                    resolve(false);
+                }
+                // Consume response data to free up memory
+                response.resume();
+            });
+
+            request.on('error', (err) => {
+                this.outputChannel.appendLine(`Error checking URL ${url}: ${err.message}`);
+                resolve(false);
+            });
+
+            request.on('timeout', () => {
+                this.outputChannel.appendLine(`Timeout checking URL ${url}`);
+                request.destroy(); // or request.abort() in newer Node.js versions
+                resolve(false);
+            });
+        });
     }
 }
 
